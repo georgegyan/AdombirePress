@@ -19,8 +19,42 @@
         </div>
     </article>
     
-    <section class="mt-8 bg-white p-6 rounded-lg shadow">
-        <h2 class="text-2xl font-bold mb-4">Comments</h2>
-        <!-- Comments will go here -->
-    </section>
+<section class="mt-8 bg-white p-6 rounded-lg shadow">
+    <h2 class="text-2xl font-bold mb-4">{{ post.comments.count }} Comments</h2>
+    
+    {% for comment in comments %}
+    <div class="mb-6 pb-6 border-b border-gray-200">
+        <div class="flex items-start">
+            <div class="flex-shrink-0 bg-gray-200 rounded-full w-10 h-10"></div>
+            <div class="ml-4">
+                <h3 class="font-semibold">{{ comment.name }}</h3>
+                <p class="text-sm text-gray-500">{{ comment.created_at|date:"F d, Y" }}</p>
+                <p class="mt-2">{{ comment.content|linebreaks }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No comments yet. Be the first to comment!</p>
+    {% endfor %}
+    
+    <h3 class="text-xl font-semibold mt-8 mb-4">Add a comment</h3>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label for="id_name" class="block text-sm font-medium text-gray-700">Name</label>
+            {{ comment_form.name }}
+        </div>
+        <div>
+            <label for="id_email" class="block text-sm font-medium text-gray-700">Email</label>
+            {{ comment_form.email }}
+        </div>
+        <div>
+            <label for="id_content" class="block text-sm font-medium text-gray-700">Comment</label>
+            {{ comment_form.content }}
+        </div>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Post Comment
+        </button>
+    </form>
+</section>
 {% endblock %}

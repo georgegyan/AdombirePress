@@ -1,0 +1,32 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h1 class="text-3xl font-bold mb-6">Contact Us</h1>
+        
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label for="id_name" class="block text-sm font-medium text-gray-700">Name</label>
+                {{ form.name }}
+            </div>
+            <div>
+                <label for="id_email" class="block text-sm font-medium text-gray-700">Email</label>
+                {{ form.email }}
+            </div>
+            <div>
+                <label for="id_subject" class="block text-sm font-medium text-gray-700">Subject</label>
+                {{ form.subject }}
+            </div>
+            <div>
+                <label for="id_message" class="block text-sm font-medium text-gray-700">Message</label>
+                {{ form.message }}
+            </div>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                Send Message
+            </button>
+        </form>
+    </div>
+{% endblock %}
