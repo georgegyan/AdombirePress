@@ -1,0 +1,8 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Posts in {{ category.name }}{% endblock %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold mb-8">Posts in "{{ category.name }}"</h1>
+    {% include "blog/post_list_partial.html" %}
+{% endblock %}

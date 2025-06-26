@@ -1,0 +1,21 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold mb-8">Search Results</h1>
+    
+    {% if query %}
+        <p class="mb-6">Showing results for: <strong>"{{ query }}"</strong></p>
+        
+        {% if results %}
+            {% for post in results %}
+                {% include "blog/post_list_item.html" %}
+            {% endfor %}
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+    {% else %}
+        <p>Please enter a search term.</p>
+    {% endif %}
+{% endblock %}
