@@ -23,6 +23,13 @@ class Post(models.Model):
         ('draft', 'Draft'),
         ('published', 'Published'),
     )
+
+    class Meta:
+        permissions = [
+            ("can_publish_post", "Can publish post"),
+            ("can_edit_all_posts", "Can edit all posts (not just own)"),
+            ("can_delete_all_posts", "Can delete all posts (not just own)"),
+        ]
     
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique_for_date='publish_date')

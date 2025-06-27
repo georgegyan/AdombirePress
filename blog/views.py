@@ -1,6 +1,8 @@
+from pyexpat.errors import messages
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 from django.views.generic import ListView
 from django.core.mail import send_mail
 from django.conf import settings
@@ -9,6 +11,9 @@ from .forms import CommentForm, ContactForm, PostForm
 
 @login_required
 def post_create(request):
+    if not request.user.has_perm('blog.add_post'):
+        raise PermissionDenied
+    
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
@@ -25,6 +30,9 @@ def post_create(request):
 @login_required
 def post_update(request, slug):
     post = get_object_or_404(Post, slug=slug, author=request.user)
+
+    if not (request.user.has_perm('blog.can_edit_all_posts') or post.author == request.user):
+        raise PermissionDenied
     
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES, instance=post)
@@ -39,12 +47,23 @@ def post_update(request, slug):
 @login_required
 def post_delete(request, slug):
     post = get_object_or_404(Post, slug=slug, author=request.user)
+
+    if not (request.user.has_perm('blog.can_delete_all_posts') or post.author == request.user):
+        raise PermissionDenied
     
     if request.method == 'POST':
         post.delete()
         return redirect('post_list')
     
     return render(request, 'blog/post_confirm_delete.html', {'post': post})
+
+@permission_required('blog.can_publish_post', raise_exception=True)
+def post_publish(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    post.status = 'published'
+    post.save()
+    messages.success(request, 'Post published successfully!')
+    return redirect('post_detail', slug=slug)
 
 def post_list(request):
     posts = Post.objects.filter(status='published').order_by('-publish_date')

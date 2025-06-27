@@ -39,6 +39,23 @@
             <a href="{% url 'register' %}" class="text-blue-600 hover:text-blue-800">Register</a>
         {% endif %}
     </div>
+     <div class="ml-auto flex space-x-4">
+        {% if user.is_authenticated %}
+            {% if perms.blog.add_post %}
+                <a href="{% url 'post_create' %}" class="text-blue-600 hover:text-blue-800">New Post</a>
+            {% endif %}
+            
+            {% if perms.blog.can_publish_post %}
+                <a href="{% url 'admin:index' %}" class="text-blue-600 hover:text-blue-800">Admin</a>
+            {% endif %}
+            
+            <a href="{% url 'profile' %}" class="text-blue-600 hover:text-blue-800">Profile</a>
+            <a href="{% url 'logout' %}" class="text-blue-600 hover:text-blue-800">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-800">Login</a>
+            <a href="{% url 'register' %}" class="text-blue-600 hover:text-blue-800">Register</a>
+        {% endif %}
+    </div>
 </nav>
     </div>
 </header>

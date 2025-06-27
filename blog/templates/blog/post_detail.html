@@ -55,6 +55,30 @@
         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
             Post Comment
         </button>
+        {% if user.is_authenticated %}
+    <div class="mt-6 flex space-x-4">
+        {% if post.author == user or perms.blog.can_edit_all_posts %}
+            <a href="{% url 'post_update' post.slug %}" 
+               class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700">
+                Edit
+            </a>
+        {% endif %}
+        
+        {% if post.author == user or perms.blog.can_delete_all_posts %}
+            <a href="{% url 'post_delete' post.slug %}" 
+               class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                Delete
+            </a>
+        {% endif %}
+        
+        {% if perms.blog.can_publish_post and post.status == 'draft' %}
+            <a href="{% url 'post_publish' post.slug %}" 
+               class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Publish
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
     </form>
 </section>
 {% endblock %}
