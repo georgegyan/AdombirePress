@@ -26,11 +26,12 @@ class Post(models.Model):
     
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique_for_date='publish_date')
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
     content = models.TextField()
     featured_image = models.ImageField(upload_to='posts/%Y/%m/%d/', blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     publish_date = models.DateTimeField(default=timezone.now)
+    tags = models.CharField(max_length=255, blank=True) 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')

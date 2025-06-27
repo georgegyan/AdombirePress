@@ -1,0 +1,22 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Delete Post{% endblock %}
+
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h1 class="text-2xl font-bold mb-6">Delete Post</h1>
+        
+        <p class="mb-6">Are you sure you want to delete "{{ post.title }}"?</p>
+        
+        <form method="post" class="flex space-x-4">
+            {% csrf_token %}
+            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                Confirm Delete
+            </button>
+            <a href="{{ post.get_absolute_url }}"
+               class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+                Cancel
+            </a>
+        </form>
+    </div>
+{% endblock %}

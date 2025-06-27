@@ -1,10 +1,50 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.views.generic import ListView
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Post, Category
-from .forms import CommentForm, ContactForm
+from .forms import CommentForm, ContactForm, PostForm
+
+@login_required
+def post_create(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            form.save_m2m()  # For saving many-to-many relationships (tags)
+            return redirect(post.get_absolute_url())
+    else:
+        form = PostForm()
+    
+    return render(request, 'blog/post_form.html', {'form': form})
+
+@login_required
+def post_update(request, slug):
+    post = get_object_or_404(Post, slug=slug, author=request.user)
+    
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            post = form.save()
+            return redirect(post.get_absolute_url())
+    else:
+        form = PostForm(instance=post)
+    
+    return render(request, 'blog/post_form.html', {'form': form})
+
+@login_required
+def post_delete(request, slug):
+    post = get_object_or_404(Post, slug=slug, author=request.user)
+    
+    if request.method == 'POST':
+        post.delete()
+        return redirect('post_list')
+    
+    return render(request, 'blog/post_confirm_delete.html', {'post': post})
 
 def post_list(request):
     posts = Post.objects.filter(status='published').order_by('-publish_date')
