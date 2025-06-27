@@ -1,0 +1,89 @@
+{% extends "blog/base.html" %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Dashboard</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <!-- Stats Cards -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-2">Total Posts</h3>
+            <p class="text-3xl font-bold text-blue-600">{{ post_stats.total_posts }}</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-2">Published Posts</h3>
+            <p class="text-3xl font-bold text-green-600">{{ post_stats.published_posts }}</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-2">Draft Posts</h3>
+            <p class="text-3xl font-bold text-yellow-600">{{ post_stats.draft_posts }}</p>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Recent Posts -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">My Recent Posts</h2>
+            {% if user_posts %}
+                <ul class="space-y-4">
+                    {% for post in user_posts %}
+                    <li class="border-b border-gray-200 pb-4">
+                        <h3 class="font-semibold">
+                            <a href="{{ post.get_absolute_url }}" class="text-blue-600 hover:text-blue-800">
+                                {{ post.title }}
+                            </a>
+                        </h3>
+                        <p class="text-sm text-gray-500">
+                            {{ post.publish_date|date:"F d, Y" }} | 
+                            {{ post.comment_count }} comment{{ post.comment_count|pluralize }} | 
+                            <span class="{% if post.status == 'published' %}text-green-600{% else %}text-yellow-600{% endif %}">
+                                {{ post.status|title }}
+                            </span>
+                        </p>
+                        <div class="mt-2 space-x-2">
+                            <a href="{% url 'post_update' post.slug %}" class="text-sm text-blue-600 hover:text-blue-800">Edit</a>
+                            {% if post.status == 'draft' and perms.blog.can_publish_post %}
+                            <a href="{% url 'post_publish' post.slug %}" class="text-sm text-green-600 hover:text-green-800">Publish</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'post_create' %}" class="mt-4 inline-block text-blue-600 hover:text-blue-800">
+                    + Create New Post
+                </a>
+            {% else %}
+                <p>You haven't created any posts yet.</p>
+                <a href="{% url 'post_create' %}" class="mt-4 inline-block text-blue-600 hover:text-blue-800">
+                    Create Your First Post
+                </a>
+            {% endif %}
+        </div>
+        
+        <!-- Recent Comments -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">My Recent Comments</h2>
+            {% if user_comments %}
+                <ul class="space-y-4">
+                    {% for comment in user_comments %}
+                    <li class="border-b border-gray-200 pb-4">
+                        <p class="text-gray-700">{{ comment.content|truncatewords:20 }}</p>
+                        <p class="text-sm text-gray-500 mt-2">
+                            On <a href="{{ comment.post.get_absolute_url }}" class="text-blue-600 hover:text-blue-800">
+                                {{ comment.post.title }}
+                            </a> | {{ comment.created_at|date:"F d, Y" }}
+                        </p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You haven't made any comments yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
