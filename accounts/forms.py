@@ -1,19 +1,36 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
+    account_type = forms.ChoiceField(
+        choices=[('reader', 'Reader'), ('author', 'Author')],
+        widget=forms.RadioSelect,
+        required=True
+    )
     
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-input'}),
-            'email': forms.EmailInput(attrs={'class': 'form-input'}),
-        }
+        fields = ['username', 'email', 'password1', 'password2', 'account_type']
     
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['password1'].widget.attrs.update({'class': 'form-input'})
-        self.fields['password2'].widget.attrs.update({'class': 'form-input'})
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        
+        if commit:
+            user.save()
+            
+            # Add to appropriate group
+            account_type = self.cleaned_data['account_type']
+            if account_type == 'author':
+                author_group = Group.objects.get(name='Authors')
+                user.groups.add(author_group)
+            
+            # Add default permissions
+            user.user_permissions.add(
+                Permission.objects.get(codename='add_comment'),
+                Permission.objects.get(codename='view_post'),
+            )
+        
+        return user
