@@ -198,3 +198,7 @@ PASSWORD_RESET_TIMEOUT = 86400  # 24 hours
 SITE_NAME = "AdombirePress Blog"
 DOMAIN = "localhost:8000"  # Change to your actual domain in production
 USE_HTTPS = False  # Set to True when using HTTPS in production
+
+GEOIP_PATH = os.path.join(BASE_DIR, 'geoip')
+GEOIP_CITY = 'GeoLite2-City.mmdb'
+GEOIP_COUNTRY = 'GeoLite2-Country.mmdb'

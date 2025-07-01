@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">AdombirePress Blog Admin</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+{{ block.super }}
+<li><a href="{% url 'admin_dashboard' %}" class="dashboard-link">Activity Dashboard</a></li>
+{% endblock %}

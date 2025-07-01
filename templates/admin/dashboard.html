@@ -1,0 +1,122 @@
+{% extends "admin/base_site.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="px-4 py-6">
+    <h1 class="text-2xl font-bold mb-6">Admin Dashboard</h1>
+    
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-2">Active Users (24h)</h3>
+            <p class="text-3xl font-bold text-blue-600">{{ active_users|intcomma }}</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-2">Recent Activities</h3>
+            <p class="text-3xl font-bold text-green-600">{{ recent_activities.count|intcomma }}</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-2">Activity Types</h3>
+            <p class="text-3xl font-bold text-purple-600">{{ activity_types.count|intcomma }}</p>
+        </div>
+    </div>
+    
+    <!-- Recent Activities Table -->
+    <div class="bg-white p-6 rounded-lg shadow mb-8">
+        <h2 class="text-xl font-bold mb-4">Recent User Activities</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for activity in recent_activities %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="text-sm font-medium text-gray-900">
+                                    <a href="{% url 'admin:auth_user_change' activity.user.id %}">{{ activity.user.username }}</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ activity.get_activity_type_display }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500">{{ activity.ip_address|default:"-" }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500">{{ activity.timestamp|timesince }} ago</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Activity Types Breakdown -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">Activity Types (Last 7 Days)</h2>
+            <div class="space-y-3">
+                {% for type in activity_types %}
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700 capitalize">{{ type.activity_type }}</span>
+                        <span class="text-sm font-medium text-gray-700">{{ type.total }}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-blue-600 h-2.5 rounded-full" 
+                             style="width: {{ type.total|div:activity_types.0.total|mul:100 }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Login Locations -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">Login Locations</h2>
+            {% if login_locations %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for location in login_locations|slice:":5" %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ location.ip }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">
+                                    {{ location.city }}, {{ location.country }}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if login_locations|length > 5 %}
+                <p class="mt-2 text-sm text-gray-500">+ {{ login_locations|length|add:"-5" }} more locations</p>
+                {% endif %}
+            </div>
+            {% else %}
+            <p class="text-gray-500">No location data available. Install geoip2 package for location tracking.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
