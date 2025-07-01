@@ -1,0 +1,15 @@
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans %}Hi {{ user.username }},{% endblocktrans %}
+
+{% blocktrans %}We detected a new login to your account:{% endblocktrans %}
+
+- Activity: {{ activity.get_activity_type_display }}
+- Time: {{ activity.timestamp }}
+- IP Address: {{ activity.ip_address }}
+- Device: {{ activity.user_agent|truncatechars:50 }}
+
+{% trans "If this wasn't you, please secure your account immediately." %}
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+{% endautoescape %}

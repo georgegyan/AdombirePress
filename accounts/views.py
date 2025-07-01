@@ -5,7 +5,7 @@ from blog.models import Post, Comment
 from django.db.models import Count
 from .forms import UserRegisterForm, ProfileUpdateForm
 from django.contrib import messages
-from .models import Profile
+from .models import Profile, UserActivity
 from django.utils import timezone
 from .utils import send_verification_email
 from social_django.models import UserSocialAuth
@@ -120,3 +120,8 @@ def profile_view(request):
         form = ProfileUpdateForm(instance=request.user.profile)
     
     return render(request, 'accounts/profile.html', {'form': form, 'social_accounts': social_accounts})
+
+@login_required
+def activity_log(request):
+    activities = UserActivity.objects.filter(user=request.user).order_by('-timestamp')[:50]
+    return render(request, 'accounts/activity_log.html', {'activities': activities})
