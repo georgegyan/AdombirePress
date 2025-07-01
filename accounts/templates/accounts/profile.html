@@ -21,6 +21,19 @@
                 
                 <h2 class="text-xl font-semibold">{{ request.user.username }}</h2>
                 <p class="text-gray-600">{{ request.user.email }}</p>
+                <!-- Add this near the email display -->
+                <div class="mt-2">
+                    <span class="text-sm font-medium {% if user.profile.email_verified %}text-green-600{% else %}text-red-600{% endif %}">
+                        {% if user.profile.email_verified %}
+                        ✓ Email verified
+                        {% else %}
+                        ✗ Email not verified
+                        <a href="{% url 'requested_verification' %}" class="ml-2 text-blue-600 hover:text-blue-800 text-sm">
+                            Verify now
+                        </a>
+                        {% endif %}
+                    </span>
+                </div>
                 
                 <div class="mt-4">
                     <a href="{% url 'dashboard' %}" 
