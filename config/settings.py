@@ -1,6 +1,6 @@
 from pathlib import Path
-import environ
-import os
+
+ # Reads variables from .env file
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,6 +38,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.EmailVerificationMiddleware',
+]
+
+
+# URLs exempt from email verification check
+VERIFICATION_EXEMPT_URLS = [
+    '/admin/',  # Add any other URLs that shouldn't require verification
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -95,7 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Accra'
 
 USE_I18N = True
 
@@ -111,26 +118,33 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# Email Configuration
+import os
+import environ
+
+# Initialise environment
+env = environ.Env()
+environ.Env.read_env()  # This looks for the .env file
+
+# Email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_USER')  
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
-DEFAULT_FROM_EMAIL = 'your-email@gmail.com'
 
-# Password reset settings
-PASSWORD_RESET_TIMEOUT = 86400  # 24 hours in seconds
+EMAIL_HOST_USER = env("EMAIL_USER")         
+EMAIL_HOST_PASSWORD = env("EMAIL_PASS")    
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER       
 
-env = environ.Env()
-environ.Env.read_env()
+# Password reset timeout (in seconds)
+PASSWORD_RESET_TIMEOUT = 86400  # 24 hours
 
-EMAIL_HOST_USER = env("EMAIL_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_PASS")
+# Site information used for email links
+SITE_NAME = "AdombirePress Blog"
+DOMAIN = "localhost:8000"  # Change to your actual domain in production
+USE_HTTPS = False  # Set to True when using HTTPS in production

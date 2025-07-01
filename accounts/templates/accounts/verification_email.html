@@ -1,0 +1,12 @@
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans %}Hi {{ user.username }},{% endblocktrans %}
+
+{% trans "Thank you for registering with our site. Please verify your email address by clicking the link below:" %}
+
+{{ protocol }}://{{ domain }}{% url 'verify_email' token=token %}
+
+{% trans "If you didn't request this, please ignore this email." %}
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+{% endautoescape %}
