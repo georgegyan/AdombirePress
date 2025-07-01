@@ -8,6 +8,7 @@ from django.contrib import messages
 from .models import Profile
 from django.utils import timezone
 from .utils import send_verification_email
+from social_django.models import UserSocialAuth
 
 def register_view(request):
     if request.method == 'POST':
@@ -104,6 +105,7 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
+    social_accounts = UserSocialAuth.objects.filter(user=request.user)
     if request.method == 'POST':
         form = ProfileUpdateForm(
             request.POST, 
@@ -117,4 +119,4 @@ def profile_view(request):
     else:
         form = ProfileUpdateForm(instance=request.user.profile)
     
-    return render(request, 'accounts/profile.html', {'form': form})
+    return render(request, 'accounts/profile.html', {'form': form, 'social_accounts': social_accounts})

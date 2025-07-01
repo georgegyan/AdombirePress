@@ -72,5 +72,6 @@
                 Already have an account? <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-800">Login</a>
             </p>
         </form>
+        {% include 'accounts/social_login.html' %}
     </div>
 {% endblock %}
