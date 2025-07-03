@@ -227,3 +227,8 @@ VERIFICATION_EXEMPT_URLS = [
     '/static/',
     '/media/',
 ]
+
+# Ensure these settings are correct:
+CSRF_COOKIE_SECURE = False  # True in production with HTTPS
+CSRF_COOKIE_HTTPONLY = False
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']  # Add your domains
