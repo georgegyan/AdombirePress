@@ -1,4 +1,6 @@
 from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv
 
  # Reads variables from .env file
 
@@ -181,15 +183,32 @@ import environ
 env = environ.Env()
 environ.Env.read_env()  # This looks for the .env file
 
-# Email configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False  # Explicitly set to False when using TLS
+# EMAIL_TIMEOUT = 10  # Add timeout
+# EMAIL_HOST_USER = env("EMAIL_USER")
+# EMAIL_HOST_PASSWORD = env("EMAIL_PASS")
+# DEFAULT_FROM_EMAIL = env("EMAIL_USER")
+# SERVER_EMAIL = env("EMAIL_USER")  # For admin emails      
 
-EMAIL_HOST_USER = env("EMAIL_USER")         
-EMAIL_HOST_PASSWORD = env("EMAIL_PASS")    
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER       
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.stmp.EmailBackend'
+    EMAIL_HOST = 'stmp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = env("georgegyankwame72@gmail.com") 
+    EMAIL_HOST_PASSWORD = env.str("eboyajjuenzffefg")
+    DEFAULT_FROM_EMAIL = env("georgegyankwame72@gmail.com")
+    SERVER_EMAIL = env("georgegyankwame72@gmail.com")
+
+    EMAIL_TIMEOUT = 10  
+
 
 # Password reset timeout (in seconds)
 PASSWORD_RESET_TIMEOUT = 86400  # 24 hours
@@ -202,3 +221,9 @@ USE_HTTPS = False  # Set to True when using HTTPS in production
 GEOIP_PATH = os.path.join(BASE_DIR, 'geoip')
 GEOIP_CITY = 'GeoLite2-City.mmdb'
 GEOIP_COUNTRY = 'GeoLite2-Country.mmdb'
+
+VERIFICATION_EXEMPT_URLS = [
+    '/admin/',
+    '/static/',
+    '/media/',
+]

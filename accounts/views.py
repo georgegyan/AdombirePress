@@ -7,8 +7,10 @@ from .forms import UserRegisterForm, ProfileUpdateForm
 from django.contrib import messages
 from .models import Profile, UserActivity
 from django.utils import timezone
-from .utils import send_verification_email
+from .utils import send_verification_email, settings
 from social_django.models import UserSocialAuth
+from django.http import HttpResponse
+from django.core.mail import send_mail
 
 def register_view(request):
     if request.method == 'POST':
@@ -59,6 +61,16 @@ def verify_email(request, token):
     except Profile.DoesNotExist:
         messages.error(request, 'Invalid verification link.')
         return redirect('home')
+
+def test_email(request):
+    send_mail(
+        'Test from Django',
+        'If you get this, email is working!',
+        settings.EMAIL_HOST_USER,
+        [settings.EMAIL_HOST_USER],  # Sends to yourself
+        fail_silently=False,
+    )
+    return HttpResponse("Test email sent! Check your inbox.")
 
 @login_required
 def dashboard_view(request):

@@ -8,7 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('blog.urls')),
     path('accounts/', include('accounts.urls')),
-
+    path('oauth/', include('social_django.urls', namespace='social')),
     #Password reset
     path('password-reset/',
          auth_views.PasswordResetView.as_view(

@@ -8,7 +8,6 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils.html import strip_tags
 
-
 @receiver(user_logged_in)
 def log_user_login(sender, request, user, **kwargs):
     activity = UserActivity.objects.create(
