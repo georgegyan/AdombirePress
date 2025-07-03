@@ -6,7 +6,7 @@ from django.utils import timezone
 import uuid
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=100, blank=True)
     website = models.URLField(blank=True)
@@ -25,15 +25,6 @@ class Profile(models.Model):
         self.token_created_at = timezone.now()
         self.save()
         return self.verification_token
-    
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
 
 class UserActivity(models.Model):
     ACTIVITY_CHOICES = [
@@ -44,7 +35,8 @@ class UserActivity(models.Model):
         ('post_created', 'Post Created'),
         ('post_updated', 'Post Updated'),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='activities')
     activity_type = models.CharField(max_length=20, choices=ACTIVITY_CHOICES)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.CharField(max_length=255, blank=True)
@@ -57,3 +49,18 @@ class UserActivity(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.get_activity_type_display()} at {self.timestamp}"
+
+# Signal handlers
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """Automatically create a profile when a new user is created"""
+    if created:
+        Profile.objects.get_or_create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    """Ensure profile is saved when user is saved"""
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
+    else:
+        Profile.objects.get_or_create(user=instance)
